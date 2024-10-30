@@ -1,0 +1,33 @@
+version: "3.8"
+
+# Services
+services:
+  # Server service
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    image: youtube-backend:latest
+    ports:
+      - "8800:8800"
+    environment:
+      - MONGO=${MONGO}
+      - JWT=${JWT}
+
+  # Client service
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+
+    image: youtube-frontend:latest
+    ports:
+      - "80:80"
+    environment:
+      - REACT_APP_FIREBASE_API_KEY=${REACT_APP_FIREBASE_API_KEY}
+    depends_on:
+      - server
+
+# Volumes define
+volumes:
+  mydata:
