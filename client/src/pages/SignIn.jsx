@@ -82,7 +82,7 @@ const SignIn = () => {
     e.preventDefault();
     dispatch(loginStart());
     try {
-      const res = await axios.post("http://localhost:8800/api/auth/signin", {
+      const res = await axios.post("/api/auth/signin", {
         name,
         password,
       });
@@ -99,7 +99,7 @@ const SignIn = () => {
       .then((result) => {
         axios
           .post(
-            "http://localhost:8800/api/auth/google",
+            "/api/auth/google",
             {
               name: result.user.displayName,
               email: result.user.email,

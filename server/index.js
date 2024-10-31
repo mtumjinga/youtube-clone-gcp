@@ -17,6 +17,8 @@ app.use(
       "http://localhost",
       "http://34.48.175.1:80",
       "http://34.48.175.1",
+      "http://markbosire.click",
+      "https://markbosire.click",
     ],
     credentials: true,
   })
