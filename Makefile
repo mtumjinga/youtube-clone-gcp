@@ -12,6 +12,11 @@ REMOTE_TAG_BACKEND=gcr.io/$(PROJECT_ID)/$(LOCAL_TAG_BACKEND)
 REMOTE_TAG_FRONTEND=gcr.io/$(PROJECT_ID)/$(LOCAL_TAG_FRONTEND)
 CONTAINER_NAME_BACKEND=youtube-backend
 CONTAINER_NAME_FRONTEND=youtube-frontend
+
+define get-secret
+$(shell gcloud secrets versions access latest --secret=$(1) --project=$(PROJECT_ID))
+endef
+
 run-local:
 	docker-compose up 
 
@@ -84,4 +89,4 @@ deploy:
 	@echo "Pulling latest container images..."
 	$(MAKE) ssh-cmd CMD='cd $(VM_PATH) && docker pull $(REMOTE_TAG_BACKEND) && docker pull $(REMOTE_TAG_FRONTEND)'
 	@echo "Deploying new container versions with docker-compose..."
-	$(MAKE) ssh-cmd CMD='cd $(VM_PATH) && docker compose down && docker compose up -d'
+	$(MAKE) ssh-cmd CMD='cd $(VM_PATH) && docker compose down &&  MONGO=$(call get_secret, MONGO) JWT=$(call get_secret, JWT) REACT_APP_FIREBASE_API_KEY=$(call get_secret, REACT_APP_FIREBASE_API_KEY) docker compose up -d'
