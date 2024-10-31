@@ -13,9 +13,10 @@ REMOTE_TAG_FRONTEND=gcr.io/$(PROJECT_ID)/$(LOCAL_TAG_FRONTEND)
 CONTAINER_NAME_BACKEND=youtube-backend
 CONTAINER_NAME_FRONTEND=youtube-frontend
 
-define get-secret
-$(shell gcloud secrets versions access latest --secret=$(1) --project=$(PROJECT_ID))
-endef
+get-secrets:
+    export MONGO=$(shell gcloud secrets versions access latest --secret="MONGO" --project=$(PROJECT_ID))
+    export JWT=$(shell gcloud secrets versions access latest --secret="JWT" --project=$(PROJECT_ID))
+    export REACT_APP_FIREBASE_API_KEY=$(shell gcloud secrets versions access latest --secret="REACT_APP_FIREBASE_API_KEY" --project=$(PROJECT_ID))
 
 run-local:
 	docker-compose up 
@@ -88,5 +89,11 @@ deploy:
 	# Pull the latest images on the VM
 	@echo "Pulling latest container images..."
 	$(MAKE) ssh-cmd CMD='cd $(VM_PATH) && docker pull $(REMOTE_TAG_BACKEND) && docker pull $(REMOTE_TAG_FRONTEND)'
-	@echo "Deploying new container versions with docker-compose..."
-	$(MAKE) ssh-cmd CMD='cd $(VM_PATH) && docker compose down &&  MONGO=$(call get_secret, MONGO) JWT=$(call get_secret, JWT) REACT_APP_FIREBASE_API_KEY=$(call get_secret, REACT_APP_FIREBASE_API_KEY) docker compose up -d'
+	echo "Deploying new container versions with docker-compose..."
+ssh-test: 
+	$(MAKE) ssh-cmd CMD='\
+	export MONGO=$(shell gcloud secrets versions access latest --secret="MONGO" --project=$(PROJECT_ID)) && \
+	export JWT=$(shell gcloud secrets versions access latest --secret="JWT" --project=$(PROJECT_ID)) && \
+	export REACT_APP_FIREBASE_API_KEY=$(shell gcloud secrets versions access latest --secret="REACT_APP_FIREBASE_API_KEY" --project=$(PROJECT_ID)) && \
+	cd $(VM_PATH) && \
+	docker compose up -d'
