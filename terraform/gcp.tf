@@ -32,8 +32,8 @@ resource "google_compute_firewall" "allow_http" {
 
 # OS IMAGE
 data "google_compute_image" "cos_image" {
-  family  = "cos-117-lts"
-  project = "cos-cloud"
+  family  = "ubuntu-2204-lts"
+  project = "ubuntu-os-cloud"
 }
 
 # COMPUTE ENGINE INSTANCE

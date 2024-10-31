@@ -1,0 +1,14 @@
+version: "3.8"
+
+services:
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    image: youtube-backend:latest
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    image: youtube-frontend:latest
