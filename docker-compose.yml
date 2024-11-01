@@ -32,7 +32,7 @@ services:
     volumes:
       - certbot-etc:/etc/letsencrypt
       - certbot-var:/var/lib/letsencrypt
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h; done'"
+    entrypoint: /bin/sh -c 'trap exit TERM; while :; do certbot renew --standalone --preferred-challenges http-01 --http-01-port 81 --quiet && echo "Certbot checked for renewal"; sleep 12h; done'
 
 volumes:
   certbot-etc:

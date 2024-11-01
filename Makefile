@@ -70,10 +70,13 @@ push:
 	docker push $(REMOTE_TAG_BACKEND)
 	docker tag $(LOCAL_TAG_FRONTEND) $(REMOTE_TAG_FRONTEND)
 	docker push $(REMOTE_TAG_FRONTEND)
-
+create-ssl:
+	$(MAKE) ssh-cmd CMD='docker compose run --rm certbot certonly --webroot -w /var/lib/letsencrypt --email $(EMAIL) -d $(DOMAIN) -m --agree-tos --no-eff-email && \'
 # Target to set up a cron job for SSL certificate renewal
 renew-ssl:
 	$(MAKE) ssh-cmd CMD='(crontab -l 2>/dev/null; echo "0 0 1 */3 * certbot renew --quiet --no-self-upgrade") | crontab -'
+
+
 
 deploy: 
    	
@@ -103,6 +106,6 @@ ssh-test:
     cd $(VM_PATH) && \
     docker compose down && \
     docker compose up -d && \
-	docker compose run --rm certbot certonly --webroot -w /var/lib/letsencrypt --email $(EMAIL) -d $(DOMAIN) -m --agree-tos --no-eff-email && \
+	$(MAKE) create-ssl && \
 	$(MAKE) renew-ssl'
 
