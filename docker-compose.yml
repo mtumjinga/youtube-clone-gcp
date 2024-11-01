@@ -1,8 +1,13 @@
 version: "3.8"
 
+# Services
 services:
+  # Server service
   server:
-    image: gcr.io/banded-meridian-435911-g6/youtube-backend:latest
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    image: youtube-backend:latest
     ports:
       - "8800:8800"
     environment:
@@ -10,30 +15,21 @@ services:
       - JWT=${JWT}
     restart: unless-stopped
 
+  # Client service
   client:
-    image: gcr.io/banded-meridian-435911-g6/youtube-frontend:latest
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+
+    image: youtube-frontend:latest
     ports:
       - "80:80"
-      - "443:443"
     environment:
       - REACT_APP_FIREBASE_API_KEY=${REACT_APP_FIREBASE_API_KEY}
     restart: unless-stopped
     depends_on:
       - server
-      - certbot
-    volumes:
-      - certbot-etc:/etc/letsencrypt
-      - certbot-var:/var/lib/letsencrypt
 
-  certbot:
-    ports:
-      - "81:81"
-    image: certbot/certbot
-    volumes:
-      - certbot-etc:/etc/letsencrypt
-      - certbot-var:/var/lib/letsencrypt
-    entrypoint: /bin/sh -c 'trap exit TERM; while :; do certbot renew --standalone --preferred-challenges http-01 --http-01-port 81 --quiet && echo "Certbot checked for renewal"; sleep 12h; done'
-
+# Volumes define
 volumes:
-  certbot-etc:
-  certbot-var:
+  mydata:
