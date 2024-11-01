@@ -14,17 +14,10 @@ services:
     image: gcr.io/banded-meridian-435911-g6/youtube-frontend:latest
     ports:
       - "80:80"
+      - "443:443"
     environment:
       - REACT_APP_FIREBASE_API_KEY=${REACT_APP_FIREBASE_API_KEY}
     restart: unless-stopped
-    depends_on:
-      - server
-
-  nginx:
-    build: .
-    ports:
-      - "80:80"
-      - "443:443"
     depends_on:
       - server
       - certbot

@@ -71,6 +71,10 @@ push:
 	docker tag $(LOCAL_TAG_FRONTEND) $(REMOTE_TAG_FRONTEND)
 	docker push $(REMOTE_TAG_FRONTEND)
 
+# Target to set up a cron job for SSL certificate renewal
+renew-ssl:
+	$(MAKE) ssh-cmd CMD='(crontab -l 2>/dev/null; echo "0 0 1 */3 * certbot renew --quiet --no-self-upgrade") | crontab -'
+
 deploy: 
    	
 	# Pull the latest code on the VM
@@ -92,12 +96,13 @@ deploy:
 	@echo "Pulling latest container images..."
 	$(MAKE) ssh-cmd CMD='cd $(VM_PATH) && docker pull $(REMOTE_TAG_BACKEND) && docker pull $(REMOTE_TAG_FRONTEND)'	
 	echo "Deploying new container versions with docker-compose..."
+ssh-test:
 	$(MAKE) ssh-cmd CMD='export MONGO=\"$(shell gcloud secrets versions access latest --secret="MONGO" --project=$(PROJECT_ID))\" && \
     export JWT=\"$(shell gcloud secrets versions access latest --secret="JWT" --project=$(PROJECT_ID))\" && \
     export REACT_APP_FIREBASE_API_KEY=\"$(shell gcloud secrets versions access latest --secret="REACT_APP_FIREBASE_API_KEY" --project=$(PROJECT_ID))\" && \
     cd $(VM_PATH) && \
     docker compose down && \
     docker compose up -d && \
-	docker-compose run --rm certbot certonly --webroot -w /var/lib/letsencrypt --email $(EMAIL) -d $(DOMAIN) -m --agree-tos --no-eff-email && \
-	(crontab -l 2>/dev/null; echo "0 0 1 */3 * certbot renew --quiet --no-self-upgrade") | crontab -'
+	docker compose run --rm certbot certonly --webroot -w /var/lib/letsencrypt --email $(EMAIL) -d $(DOMAIN) -m --agree-tos --no-eff-email && \
+	$(MAKE) renew-ssl'
 
