@@ -20,5 +20,25 @@ services:
     depends_on:
       - server
 
+  nginx:
+    build: .
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - server
+      - certbot
+    volumes:
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
+
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h; done'"
+
 volumes:
-  mydata:
+  certbot-etc:
+  certbot-var:

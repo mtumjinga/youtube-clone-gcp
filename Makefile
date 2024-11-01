@@ -12,6 +12,8 @@ REMOTE_TAG_BACKEND=gcr.io/$(PROJECT_ID)/$(LOCAL_TAG_BACKEND)
 REMOTE_TAG_FRONTEND=gcr.io/$(PROJECT_ID)/$(LOCAL_TAG_FRONTEND)
 CONTAINER_NAME_BACKEND=youtube-backend
 CONTAINER_NAME_FRONTEND=youtube-frontend
+EMAIL=markbosirekenyariri@gmail.com
+DOMAIN=markbosire.click
 
 get-secrets:
     export MONGO=$(shell gcloud secrets versions access latest --secret="MONGO" --project=$(PROJECT_ID))
@@ -88,13 +90,14 @@ deploy:
 
 	# Pull the latest images on the VM
 	@echo "Pulling latest container images..."
-	$(MAKE) ssh-cmd CMD='cd $(VM_PATH) && docker pull $(REMOTE_TAG_BACKEND) && docker pull $(REMOTE_TAG_FRONTEND)'
-ssh-secrets:	
+	$(MAKE) ssh-cmd CMD='cd $(VM_PATH) && docker pull $(REMOTE_TAG_BACKEND) && docker pull $(REMOTE_TAG_FRONTEND)'	
 	echo "Deploying new container versions with docker-compose..."
 	$(MAKE) ssh-cmd CMD='export MONGO=\"$(shell gcloud secrets versions access latest --secret="MONGO" --project=$(PROJECT_ID))\" && \
     export JWT=\"$(shell gcloud secrets versions access latest --secret="JWT" --project=$(PROJECT_ID))\" && \
     export REACT_APP_FIREBASE_API_KEY=\"$(shell gcloud secrets versions access latest --secret="REACT_APP_FIREBASE_API_KEY" --project=$(PROJECT_ID))\" && \
     cd $(VM_PATH) && \
     docker compose down && \
-    docker compose up -d'
+    docker compose up -d && \
+	docker-compose run --rm certbot certonly --webroot -w /var/lib/letsencrypt --email $(EMAIL) -d $(DOMAIN) -m --agree-tos --no-eff-email && \
+	(crontab -l 2>/dev/null; echo "0 0 1 */3 * certbot renew --quiet --no-self-upgrade") | crontab -'
 
