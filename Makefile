@@ -1,10 +1,10 @@
 PROJECT_ID=banded-meridian-435911-g6
-ZONE=us-east4-a
+ZONE=us-east4-c
 VM_PATH=/home/${USER}/app
 REPO_URL=https://github.com/markbosire/youtubbe-clone-gcp.git
 ENV=staging
 APP_NAME=youtube
-VM_NAME=$(APP_NAME)-vm-$(ENV)
+VM_NAME=$(APP_NAME)-instance-$(ENV)
 GITHUB_SHA?=latest
 LOCAL_TAG_BACKEND=youtube-backend:$(GITHUB_SHA)
 LOCAL_TAG_FRONTEND=youtube-frontend:$(GITHUB_SHA)
@@ -44,7 +44,7 @@ ssh:
 	gcloud compute ssh --zone $(ZONE) --project $(PROJECT_ID) $(VM_NAME)
 
 ssh-cmd: 
-	gcloud compute ssh --zone $(ZONE) --project $(PROJECT_ID) --command "$(CMD)" $(VM_NAME)
+	@gcloud compute ssh --zone $(ZONE) --project $(PROJECT_ID) --command "$(CMD)" $(VM_NAME)
 
 install-docker:
 	$(MAKE) ssh-cmd CMD="\
@@ -89,10 +89,10 @@ deploy:
 	# Pull the latest images on the VM
 	@echo "Pulling latest container images..."
 	$(MAKE) ssh-cmd CMD='cd $(VM_PATH) && docker pull $(REMOTE_TAG_BACKEND) && docker pull $(REMOTE_TAG_FRONTEND)'
-	echo "Deploying new container versions with docker-compose..."
-	$(MAKE) ssh-cmd CMD='\
-	export MONGO=$(shell gcloud secrets versions access latest --secret="MONGO" --project=$(PROJECT_ID)) && \
-	export JWT=$(shell gcloud secrets versions access latest --secret="JWT" --project=$(PROJECT_ID)) && \
-	export REACT_APP_FIREBASE_API_KEY=$(shell gcloud secrets versions access latest --secret="REACT_APP_FIREBASE_API_KEY" --project=$(PROJECT_ID)) && \
-	cd $(VM_PATH) && \
-	docker compose up -d'
+	@echo "Deploying new container versions with docker-compose..."
+	@$(MAKE) ssh-cmd CMD='export MONGO=\"$(shell gcloud secrets versions access latest --secret="MONGO" --project=$(PROJECT_ID))\" && \
+    export JWT=\"$(shell gcloud secrets versions access latest --secret="JWT" --project=$(PROJECT_ID))\" && \
+    export REACT_APP_FIREBASE_API_KEY=\"$(shell gcloud secrets versions access latest --secret="REACT_APP_FIREBASE_API_KEY" --project=$(PROJECT_ID))\" && \
+    cd $(VM_PATH) && \
+    docker compose down && \
+    docker compose up -d'

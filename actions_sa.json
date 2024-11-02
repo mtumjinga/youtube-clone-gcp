@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "banded-meridian-435911-g6",
+  "private_key_id": "25107c524fefe3a5bdf25a18ff48707bb62b52d6",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCSU0kRab/ggXLE\nz45StMEOM6g0t0yRkWowoX5XZqfl4qv8ZQUjxgD60ExoVy1cplg+PtJqIfq8B/ok\np2Qi39OimoBeWHlujfxjPn+vqXLWBMa985fZh8Qb0Fi1+4mNAWOq4mNfMMFsYSUk\nQAkyQG5wgPE/vM5FZoeIE552tW8oRK3oqdYzK+PS5O0VDWIVEcMIwX/6Kh5IJdKo\nY3WbFUYCpHVaH4bavNGL9VKiDOPGwWK6LDSbcrD1b8sI9YSCZr9U+zzm1a4uj+gq\n1+2jphKaeyuIcvnSONTOX2KO3FX5G+S6RxlhG4IiHNGbnwXheHyDpxyUNaCApLu8\nP7tZPorNAgMBAAECggEAAKZUBbrFela4zrzpMd7RmKGMFqfVtDPEF/EvoW24QyIN\nh3JfYnhHmtV/8VqpveaTL7uRrZz3Awy6BJ2lqS37P5aWCVU1PNNuknY9lOcYtnCQ\n/VjujK24pjL3od87DiA6dBDLRinuQe/wfUe3grycgO1hpNnOxKoe4fDMXFST6Mbb\nkns9m7bBaVRQ5c8ol/c9ym9YQyBPmXUyzx6X12q/Vqp68pDxXJviQwXNnp+b2bX5\nxXzz83W8AtQwUUaQH5nsersH8M95pG+nrGeECDVHHSqUDxpCnCb7j4c9FOdYnZqc\ndE1R+RfELvKwWlIbJPemVmrbEKrISan2XqvPH6ozQQKBgQDJQhlSeudTRkH7Lo8R\nhtatVQw4e766JvFs8p8LgFmNUpGj9WyWGxejYH9SGUFmidd40v1oRpBIRhpwh3Je\nqwLcNygepNptLNJ3m28sSiPR0bjMSy8oZKrk13qY/wwI9xihOx+6gzc85qCB1Ra5\n4GJmL+ymGcW8kq2PfDs9sBdbEQKBgQC6ICGXHR2/GaHdjniuk6eBUC4Rao+zgib3\ndvP0Nl3OUTj8dYKecuSiYC/wUu5C5RgdZhsO09dwG10kbySqiQ2aZ0XFi4M2hzJY\nwWMXzj1Z59ICRObR8d8f5lsDf5ouQumzTFP+nQV0/SMx2z39pOVvHsZavzCXADg+\nKr8sTyLb/QKBgCbrs33x6r59/dCXpm9bRjTrF5vswmu5kELjgMJ2pdrgtu2gTsmQ\nn7emt7imzbEIwzTIiN0bmFeBxycv6nxIUhtIR2f1tZAbdPBQjOVhyR+QkU5g09PZ\n8/qheUIRQMCTGJ5FktM9APe0GiJBlU2JCT590iQlI8peC1aOTd6WKU4hAoGBALLT\nolJlWCo+v2V2uH7LQPoehlSXdL/9AeFrudJe1dwf78eoQ7pnG0LjdcvKcj91i6jb\nbI3ffbOppuEVpD3xdk9uf/vgIk6msPnTvJinwAx8jis99iOq5zzn/3QqCoH+Kjnp\n0R3l0dNoT4NcaYAlCYetItkXruC2BlO8kHdLBWwlAoGBALf5w+xG6ObN1T0mjitn\nBoUhzFAJoibhzYszUDOnimNVKj35YOn4Fp4wfvzSZSU33qu+Yp8Q/yOyqskRAG1R\nxnSj9JkI+Nsz8S10K5OQiEQsgMX3TbpZYU4xoGQ7ZwUg0r9pcCR1vu51i6Kyt4iw\nIPdJPEN6Y6WslLMe6q6X1+0q\n-----END PRIVATE KEY-----\n",
+  "client_email": "githubactions@banded-meridian-435911-g6.iam.gserviceaccount.com",
+  "client_id": "106342592634705508239",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/githubactions%40banded-meridian-435911-g6.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
