@@ -90,7 +90,6 @@ deploy:
 	@echo "Pulling latest container images..."
 	$(MAKE) ssh-cmd CMD='cd $(VM_PATH) && docker pull $(REMOTE_TAG_BACKEND) && docker pull $(REMOTE_TAG_FRONTEND)'
 	echo "Deploying new container versions with docker-compose..."
-ssh-test: 
 	$(MAKE) ssh-cmd CMD='\
 	export MONGO=$(shell gcloud secrets versions access latest --secret="MONGO" --project=$(PROJECT_ID)) && \
 	export JWT=$(shell gcloud secrets versions access latest --secret="JWT" --project=$(PROJECT_ID)) && \

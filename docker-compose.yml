@@ -1,13 +1,8 @@
 version: "3.8"
 
-# Services
 services:
-  # Server service
   server:
-    build:
-      context: ./server
-      dockerfile: Dockerfile
-    image: youtube-backend:latest
+    image: gcr.io/banded-meridian-435911-g6/youtube-backend:latest
     ports:
       - "8800:8800"
     environment:
@@ -15,13 +10,8 @@ services:
       - JWT=${JWT}
     restart: unless-stopped
 
-  # Client service
   client:
-    build:
-      context: ./client
-      dockerfile: Dockerfile
-
-    image: youtube-frontend:latest
+    image: gcr.io/banded-meridian-435911-g6/youtube-frontend:latest
     ports:
       - "80:80"
     environment:
@@ -30,6 +20,5 @@ services:
     depends_on:
       - server
 
-# Volumes define
 volumes:
   mydata:
