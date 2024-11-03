@@ -2,8 +2,6 @@ version: "3.8"
 
 services:
   server:
-    args:
-      - IMAGE_TAG=${IMAGE_TAG}
     image: gcr.io/banded-meridian-435911-g6/youtube-backend:${IMAGE_TAG}
     ports:
       - "8800:8800"
@@ -13,8 +11,6 @@ services:
     restart: unless-stopped
 
   client:
-    args:
-      - IMAGE_TAG=${IMAGE_TAG}
     image: gcr.io/banded-meridian-435911-g6/youtube-frontend:${IMAGE_TAG}
     ports:
       - "80:80"

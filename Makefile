@@ -94,6 +94,7 @@ deploy:
 	@$(MAKE) ssh-cmd CMD='export MONGO=\"$(shell gcloud secrets versions access latest --secret="MONGO" --project=$(PROJECT_ID))\" && \
     export JWT=\"$(shell gcloud secrets versions access latest --secret="JWT" --project=$(PROJECT_ID))\" && \
     export REACT_APP_FIREBASE_API_KEY=\"$(shell gcloud secrets versions access latest --secret="REACT_APP_FIREBASE_API_KEY" --project=$(PROJECT_ID))\" && \
+	export IMAGE_TAG=\"$(IMAGE_TAG)\" && \
     cd $(VM_PATH) && \
     docker compose down && \
-    IMAGE_TAG=$(IMAGE_TAG) docker compose up -d'
+    docker compose up -d'
