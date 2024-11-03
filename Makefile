@@ -45,7 +45,7 @@ ssh:
 	gcloud compute ssh --zone $(ZONE) --project $(PROJECT_ID) $(VM_NAME)
 
 ssh-cmd: 
-	gcloud compute ssh --zone $(ZONE) --project $(PROJECT_ID) --command "$(CMD)" $(VM_NAME)
+	@gcloud compute ssh --zone $(ZONE) --project $(PROJECT_ID) --command "$(CMD)" $(VM_NAME)
 
 install-docker:
 	$(MAKE) ssh-cmd CMD="\
@@ -63,7 +63,7 @@ install-docker-compose:
 
 build:
 	docker build -t youtube-backend:${IMAGE_TAG} -f ./server/Dockerfile ./server && \
-	docker build -t youtube-frontend:${IMAGE_TAG} \
+	@docker build -t youtube-frontend:${IMAGE_TAG} \
   	--build-arg REACT_APP_FIREBASE_API_KEY=\"$(shell gcloud secrets versions access latest --secret="REACT_APP_FIREBASE_API_KEY" --project=$(PROJECT_ID))\" \
   	-f ./client/Dockerfile ./client 
 
@@ -94,7 +94,7 @@ deploy:
 	@echo "Pulling latest container images..."
 	$(MAKE) ssh-cmd CMD='cd $(VM_PATH) && docker pull $(REMOTE_TAG_BACKEND) && docker pull $(REMOTE_TAG_FRONTEND)'
 	@echo "Deploying new container versions with docker compose..."
-	$(MAKE) ssh-cmd CMD='export REACT_APP_FIREBASE_API_KEY=\"$(shell gcloud secrets versions access latest --secret="REACT_APP_FIREBASE_API_KEY" --project=$(PROJECT_ID))\" && \
+	@$(MAKE) ssh-cmd CMD='export REACT_APP_FIREBASE_API_KEY=\"$(shell gcloud secrets versions access latest --secret="REACT_APP_FIREBASE_API_KEY" --project=$(PROJECT_ID))\" && \
 	export IMAGE_TAG=\"$(IMAGE_TAG)\" && \
 	export MONGO=\"$(shell gcloud secrets versions access latest --secret="MONGO" --project=$(PROJECT_ID))\" && \
 	export JWT=\"$(shell gcloud secrets versions access latest --secret="JWT" --project=$(PROJECT_ID))\" && \
