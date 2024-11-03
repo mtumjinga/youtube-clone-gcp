@@ -5,10 +5,14 @@ services:
     build:
       context: ./server
       dockerfile: Dockerfile
-    image: youtube-backend:latest
+      args:
+        - IMAGE_TAG=${IMAGE_TAG}
+    image: youtube-backend:${IMAGE_TAG}
 
   client:
     build:
       context: ./client
       dockerfile: Dockerfile
-    image: youtube-frontend:latest
+      args:
+        - IMAGE_TAG=${IMAGE_TAG}
+    image: youtube-frontend:${IMAGE_TAG}

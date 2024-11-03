@@ -6,6 +6,7 @@ ENV=staging
 APP_NAME=youtube
 VM_NAME=$(APP_NAME)-instance-$(ENV)
 GITHUB_SHA?=latest
+IMAGE_TAG := $(GITHUB_SHA)
 LOCAL_TAG_BACKEND=youtube-backend:$(GITHUB_SHA)
 LOCAL_TAG_FRONTEND=youtube-frontend:$(GITHUB_SHA)
 REMOTE_TAG_BACKEND=gcr.io/$(PROJECT_ID)/$(LOCAL_TAG_BACKEND)
@@ -61,7 +62,7 @@ install-docker-compose:
 		docker compose version'
 
 build:
-	docker compose -f docker-compose.build.yml build
+	IMAGE_TAG=$(IMAGE_TAG) docker compose -f docker-compose.build.yml build
 
 push:
 	docker tag $(LOCAL_TAG_BACKEND) $(REMOTE_TAG_BACKEND)
