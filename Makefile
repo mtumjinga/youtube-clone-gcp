@@ -62,6 +62,7 @@ install-docker-compose:
 		docker compose version'
 
 build:
+	export REACT_APP_FIREBASE_API_KEY=\"$(shell gcloud secrets versions access latest --secret="REACT_APP_FIREBASE_API_KEY" --project=$(PROJECT_ID))\" && \
 	IMAGE_TAG=$(IMAGE_TAG) docker compose -f docker-compose.build.yml build
 
 push:
