@@ -9,6 +9,7 @@ const firebaseConfig = {
   messagingSenderId: "510132767380",
   appId: "1:510132767380:web:9963ad58a8f85f3219c281",
 };
+console.log("Firebase API Key:", process.env.REACT_APP_FIREBASE_API_KEY);
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth();
 export const provider = new GoogleAuthProvider();
