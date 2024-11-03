@@ -2,9 +2,8 @@ name: Build and Deploy to Google Compute Engine
 
 on:
   push:
-    # Turning off staging for now...
-    # branches:
-    #   - master
+    branches:
+      - main
     tags:
       - v\d+\.\d+\.\d+
 
@@ -17,14 +16,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Set ENV
-        run: |-
-          if [ ${GITHUB_REF##*/} = "main" ]; then
-            echo "ENV=staging" >> $GITHUB_ENV
-          else 
-            echo "ENV=prod" >> $GITHUB_ENV
-          fi
-
       - name: Checkout
         uses: actions/checkout@v2
 
