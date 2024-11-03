@@ -34,6 +34,13 @@ terraform-init: check-env
 		terraform workspace select $(ENV) && \
 		terraform init
 
+terraform-destroy: check-env
+	cd terraform && \
+		terraform workspace select $(ENV) && \
+		terraform destroy \
+		-var-file="./environments/common.tfvars" \
+		-var-file="./environments/$(ENV)/config.tfvars"
+
 TF_ACTION?=plan
 terraform-action: check-env
 	cd terraform && \
