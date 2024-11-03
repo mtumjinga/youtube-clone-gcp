@@ -63,7 +63,7 @@ install-docker-compose: check-env
 		docker compose version'
 
 build: 
-	docker build -t youtube-backend:${IMAGE_TAG} -f ./server/Dockerfile ./server && \
+	docker build -t youtube-backend:${IMAGE_TAG} -f ./server/Dockerfile ./server 
 	
 	@echo "Building Docker image without displaying secrets..."
 	@docker build -t youtube-frontend:${IMAGE_TAG} \
