@@ -62,9 +62,11 @@ install-docker-compose:
 		docker compose version'
 
 build:
-	export REACT_APP_FIREBASE_API_KEY=\"$(shell gcloud secrets versions access latest --secret="REACT_APP_FIREBASE_API_KEY" --project=$(PROJECT_ID))\" && \
-	IMAGE_TAG=$(IMAGE_TAG) docker compose -f docker-compose.build.yml build
-
+	IMAGE_TAG=$(IMAGE_TAG) \
+	MONGO=$(shell gcloud secrets versions access latest --secret="MONGO" --project=$(PROJECT_ID)) \
+	JWT=$(shell gcloud secrets versions access latest --secret="JWT" --project=$(PROJECT_ID)) \
+	REACT_APP_FIREBASE_API_KEY=$(shell gcloud secrets versions access latest --secret="REACT_APP_FIREBASE_API_KEY" --project=$(PROJECT_ID)) \
+	docker compose -f docker-compose.build.yml build
 push:
 	docker tag $(LOCAL_TAG_BACKEND) $(REMOTE_TAG_BACKEND)
 	docker push $(REMOTE_TAG_BACKEND)
