@@ -96,4 +96,4 @@ deploy:
     export REACT_APP_FIREBASE_API_KEY=\"$(shell gcloud secrets versions access latest --secret="REACT_APP_FIREBASE_API_KEY" --project=$(PROJECT_ID))\" && \
     cd $(VM_PATH) && \
     docker compose down && \
-    docker compose up -d'
+    IMAGE_TAG=$(IMAGE_TAG) docker compose up -d'
