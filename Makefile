@@ -62,11 +62,11 @@ install-docker-compose:
 		docker compose version'
 
 build:
-	docker compose -f docker-compose.build.yml build \
-		--build-arg IMAGE_TAG=$IMAGE_TAG \
-		--build-arg MONGO=$MONGO \
-		--build-arg JWT=$JWT \
-		--build-arg REACT_APP_FIREBASE_API_KEY=$REACT_APP_FIREBASE_API_KEY
+	docker build -t youtube-backend:${IMAGE_TAG} -f ./server/Dockerfile ./server && \
+	docker build -t youtube-frontend:${IMAGE_TAG} \
+  	--build-arg REACT_APP_FIREBASE_API_KEY=\"$(shell gcloud secrets versions access latest --secret="REACT_APP_FIREBASE_API_KEY" --project=$(PROJECT_ID))\" \
+  	-f ./client/Dockerfile ./client 
+
 push:
 	docker tag $(LOCAL_TAG_BACKEND) $(REMOTE_TAG_BACKEND)
 	docker push $(REMOTE_TAG_BACKEND)

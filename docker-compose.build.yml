@@ -7,12 +7,7 @@ services:
       dockerfile: Dockerfile
       args:
         - IMAGE_TAG=${IMAGE_TAG}
-        - MONGO=${MONGO}
-        - JWT=${JWT}
     image: youtube-backend:${IMAGE_TAG}
-    environment:
-      - MONGO=${MONGO}
-      - JWT=${JWT}
 
   client:
     build:
@@ -20,7 +15,4 @@ services:
       dockerfile: Dockerfile
       args:
         - IMAGE_TAG=${IMAGE_TAG}
-        - REACT_APP_FIREBASE_API_KEY=${REACT_APP_FIREBASE_API_KEY}
     image: youtube-frontend:${IMAGE_TAG}
-    environment:
-      - REACT_APP_FIREBASE_API_KEY=${REACT_APP_FIREBASE_API_KEY}
