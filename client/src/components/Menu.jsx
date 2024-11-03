@@ -90,7 +90,8 @@ const Menu = ({ darkMode, setDarkMode }) => {
       <Wrapper>
         <Link to="/" style={{ textDecoration: "none", color: "inherit" }}>
           <Logo>
-            <Img src={LamaTube} />I ate my tube
+            <Img src={LamaTube} />
+            Youtube
           </Logo>
         </Link>
         <Item>
@@ -136,7 +137,7 @@ const Menu = ({ darkMode, setDarkMode }) => {
             <Hr />
           </>
         )}
-        <Title>BEST OF MEWTWO</Title>
+        <Title>BEST OF YOUTUBE</Title>
         <Item>
           <LibraryMusicOutlinedIcon />
           Music
