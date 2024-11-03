@@ -2,7 +2,6 @@ PROJECT_ID=banded-meridian-435911-g6
 ZONE=us-east4-c
 VM_PATH=/home/${USER}/app
 REPO_URL=https://github.com/markbosire/youtubbe-clone-gcp.git
-ENV=staging
 APP_NAME=youtube
 VM_NAME=$(APP_NAME)-instance-$(ENV)
 GITHUB_SHA?=latest
@@ -14,10 +13,12 @@ REMOTE_TAG_FRONTEND=gcr.io/$(PROJECT_ID)/$(LOCAL_TAG_FRONTEND)
 CONTAINER_NAME_BACKEND=youtube-backend
 CONTAINER_NAME_FRONTEND=youtube-frontend
 
-get-secrets:
-    export MONGO=$(shell gcloud secrets versions access latest --secret="MONGO" --project=$(PROJECT_ID))
-    export JWT=$(shell gcloud secrets versions access latest --secret="JWT" --project=$(PROJECT_ID))
-    export REACT_APP_FIREBASE_API_KEY=$(shell gcloud secrets versions access latest --secret="REACT_APP_FIREBASE_API_KEY" --project=$(PROJECT_ID))
+
+
+check-env:
+ifndef ENV
+	$(error Please set ENV=[staging|prod])
+endif
 
 run-local:
 	docker-compose up 
@@ -25,35 +26,35 @@ run-local:
 create-tf-backend-bucket:
 	gcloud storage buckets create gs://$(PROJECT_ID)-terraform --project=$(PROJECT_ID)
 
-terraform-create-workspace: 
+terraform-create-workspace: check-env
 	cd terraform && terraform workspace new $(ENV)
 
-terraform-init: 
+terraform-init: check-env
 	cd terraform && \
 		terraform workspace select $(ENV) && \
 		terraform init
 
 TF_ACTION?=plan
-terraform-action:
+terraform-action: check-env
 	cd terraform && \
 		terraform workspace select $(ENV) && \
 		terraform $(TF_ACTION) \
 		-var-file="./environments/common.tfvars" \
 		-var-file="./environments/$(ENV)/config.tfvars"
 
-ssh:
+ssh: check-env
 	gcloud compute ssh --zone $(ZONE) --project $(PROJECT_ID) $(VM_NAME)
 
-ssh-cmd: 
+ssh-cmd: check-env
 	@gcloud compute ssh --zone $(ZONE) --project $(PROJECT_ID) --command "$(CMD)" $(VM_NAME)
 
-install-docker:
+install-docker: check-env
 	$(MAKE) ssh-cmd CMD="\
 		sudo apt-get update && \
 		sudo apt-get install curl && \
 		curl -fsSL https://get.docker.com/ | sh && \
 		sudo usermod -aG docker ${USER}"
-install-docker-compose:
+install-docker-compose: check-env
 	$(MAKE) ssh-cmd CMD=' \
 		sudo apt-get update && \
 		mkdir -p ~/.docker/cli-plugins/ && \
@@ -61,7 +62,7 @@ install-docker-compose:
 		chmod +x ~/.docker/cli-plugins/docker-compose && \
 		docker compose version'
 
-build:
+build: 
 	docker build -t youtube-backend:${IMAGE_TAG} -f ./server/Dockerfile ./server && \
 	@docker build -t youtube-frontend:${IMAGE_TAG} \
   	--build-arg REACT_APP_FIREBASE_API_KEY=\"$(shell gcloud secrets versions access latest --secret="REACT_APP_FIREBASE_API_KEY" --project=$(PROJECT_ID))\" \
@@ -73,7 +74,7 @@ push:
 	docker tag $(LOCAL_TAG_FRONTEND) $(REMOTE_TAG_FRONTEND)
 	docker push $(REMOTE_TAG_FRONTEND)
 
-deploy: 
+deploy: check-env
    	
 	# Pull the latest code on the VM
 	$(MAKE) ssh-cmd CMD='\
