@@ -64,6 +64,7 @@ install-docker-compose: check-env
 
 build: 
 	docker build -t youtube-backend:${IMAGE_TAG} -f ./server/Dockerfile ./server && \
+	
 	@echo "Building Docker image without displaying secrets..."
 	@docker build -t youtube-frontend:${IMAGE_TAG} \
   	--build-arg REACT_APP_FIREBASE_API_KEY=\"$(shell gcloud secrets versions access latest --secret="REACT_APP_FIREBASE_API_KEY" --project=$(PROJECT_ID))\" \
