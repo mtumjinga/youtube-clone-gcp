@@ -45,7 +45,7 @@ ssh:
 	gcloud compute ssh --zone $(ZONE) --project $(PROJECT_ID) $(VM_NAME)
 
 ssh-cmd: 
-	@gcloud compute ssh --zone $(ZONE) --project $(PROJECT_ID) --command "$(CMD)" $(VM_NAME)
+	gcloud compute ssh --zone $(ZONE) --project $(PROJECT_ID) --command "$(CMD)" $(VM_NAME)
 
 install-docker:
 	$(MAKE) ssh-cmd CMD="\
@@ -91,7 +91,7 @@ deploy:
 	@echo "Pulling latest container images..."
 	$(MAKE) ssh-cmd CMD='cd $(VM_PATH) && docker pull $(REMOTE_TAG_BACKEND) && docker pull $(REMOTE_TAG_FRONTEND)'
 	@echo "Deploying new container versions with docker-compose..."
-	@$(MAKE) ssh-cmd CMD='export MONGO=\"$(shell gcloud secrets versions access latest --secret="MONGO" --project=$(PROJECT_ID))\" && \
+	$(MAKE) ssh-cmd CMD='export MONGO=\"$(shell gcloud secrets versions access latest --secret="MONGO" --project=$(PROJECT_ID))\" && \
     export JWT=\"$(shell gcloud secrets versions access latest --secret="JWT" --project=$(PROJECT_ID))\" && \
     export REACT_APP_FIREBASE_API_KEY=\"$(shell gcloud secrets versions access latest --secret="REACT_APP_FIREBASE_API_KEY" --project=$(PROJECT_ID))\" && \
     cd $(VM_PATH) && \
