@@ -12,7 +12,7 @@ This repository contains a YouTube clone built using the MERN stack (MongoDB, Ex
 - [Architecture Overview](#architecture-overview)
   - [CI/CD Pipeline](#cicd-pipeline)
   - [Application Architecture](#application-architecture)
-- [SETUP](#setup)
+- [Setup](#setup)
   - [Initial Setup](#initial-setup)
   - [Grant necessary roles for Terraform](#grant-necessary-roles-for-terraform)
       - [Example `common.tfvars` File](#example-commontfvars-file)
@@ -109,7 +109,7 @@ The application flow works as follows:
 11. Firebase handles authentication
 12. Media content stored in Cloud Storage
 
-# SETUP
+# Setup
 
 This guide will walk you through setting up and deploying a YouTube clone application on Google Cloud Platform (GCP) using Terraform and GitHub Actions for CI/CD.
 
