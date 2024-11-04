@@ -5,6 +5,9 @@ provider "google" {
   zone        = "us-east4-c"
 }
 
+# Define the domain name as a variable
+
+
 # IP ADDRESS
 resource "google_compute_global_address" "ip_address" {
   name = "${var.app_name}-ip-${terraform.workspace}"
@@ -93,7 +96,7 @@ resource "google_compute_instance_group" "unmanaged_group" {
 resource "google_compute_managed_ssl_certificate" "default" {
   name = "${var.app_name}-ssl-cert-${terraform.workspace}"
   managed {
-    domains = ["markbosire.click"]
+    domains = [var.domain_name]
   }
 }
 
@@ -138,13 +141,13 @@ resource "google_compute_global_forwarding_rule" "default" {
 # DNS ZONE
 resource "google_dns_managed_zone" "default" {
   name        = "${var.app_name}-dns-zone-${terraform.workspace}"
-  dns_name    = "markbosire.click."
-  description = "DNS zone for markbosire.click"
+  dns_name    = "${var.domain_name}."
+  description = "DNS zone for ${var.domain_name}"
 }
 
 # DNS RECORD
 resource "google_dns_record_set" "default" {
-  name         = "markbosire.click."
+  name         = "${var.domain_name}."
   type         = "A"
   ttl          = 300
   managed_zone = google_dns_managed_zone.default.name
