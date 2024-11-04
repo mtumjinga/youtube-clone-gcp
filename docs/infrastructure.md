@@ -21,19 +21,6 @@ provider "google" {
 
 ---
 
-#### Domain Name Variable
-```hcl
-variable "domain_name" {
-  description = "Domain name for SSL and DNS configuration"
-  type        = string
-}
-```
-**Purpose**: Declares a variable for the domain name, used to configure SSL certificates and DNS records.
-
-**Reason**: By defining the domain name as a variable, this configuration is reusable across multiple environments or domains.
-
----
-
 #### IP Address Resource
 ```hcl
 resource "google_compute_global_address" "ip_address" {
