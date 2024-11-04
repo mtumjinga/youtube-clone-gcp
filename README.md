@@ -2,36 +2,33 @@
 
 This repository contains a YouTube clone built using the MERN stack (MongoDB, Express.js, React.js, Node.js) and deployed on Google Cloud Platform (GCP) using Terraform. The CI/CD pipeline was made using github actions.
 
-## Table of Contents
+# Table of Contents
 
 - [YouTube Clone MERN Stack with GCP](#youtube-clone-mern-stack-with-gcp)
-  - [Table of Contents](#table-of-contents)
-  - [Infrastructure as Code](#infrastructure-as-code)
+- [Table of Contents](#table-of-contents)
 - [GCP Infrastructure as Code](#gcp-infrastructure-as-code)
   - [Features](#features)
   - [Prerequisites](#prerequisites)
-  - [Architecture Overview](#architecture-overview)
-    - [CI/CD Pipeline](#cicd-pipeline)
-    - [Application Architecture](#application-architecture)
+- [Architecture Overview](#architecture-overview)
+  - [CI/CD Pipeline](#cicd-pipeline)
+  - [Application Architecture](#application-architecture)
 - [SETUP](#setup)
   - [Initial Setup](#initial-setup)
-- [Grant necessary roles for Terraform](#grant-necessary-roles-for-terraform)
+  - [Grant necessary roles for Terraform](#grant-necessary-roles-for-terraform)
       - [Example `common.tfvars` File](#example-commontfvars-file)
-- [Setup Guide for Firebase and MongoDB](#setup-guide-for-firebase-and-mongodb)
-  - [1. Create a Firebase Account](#1-create-a-firebase-account)
-  - [2. Configure Domain Access](#2-configure-domain-access)
-  - [3. Configure `./client/src/firebase.js`](#3-configure-clientsrcfirebasejs)
-  - [4. Create a MongoDB Cluster](#4-create-a-mongodb-cluster)
-    - [5. Get Your MongoDB URI](#5-get-your-mongodb-uri)
-  - [6. Storing Secrets in Google Cloud Secret Manager](#6-storing-secrets-in-google-cloud-secret-manager)
-  - [Technical Documentation](#technical-documentation)
-  - [License](#license)
+  - [Setup Guide for Firebase and MongoDB](#setup-guide-for-firebase-and-mongodb)
+    - [1. Create a Firebase Account](#1-create-a-firebase-account)
+    - [2. Configure Domain Access](#2-configure-domain-access)
+    - [3. Configure `./client/src/firebase.js`](#3-configure-clientsrcfirebasejs)
+    - [4. Create a MongoDB Cluster](#4-create-a-mongodb-cluster)
+      - [5. Get Your MongoDB URI](#5-get-your-mongodb-uri)
+    - [6. Storing Secrets in Google Cloud Secret Manager](#6-storing-secrets-in-google-cloud-secret-manager)
+- [Technical Documentation](#technical-documentation)
+- [License](#license)
 
 --- 
 
 
-
-## Infrastructure as Code
 
 # GCP Infrastructure as Code
 
@@ -58,9 +55,9 @@ Production-ready infrastructure code for deploying scalable web applications on 
 - A [Google Cloud Platform](https://console.cloud.google.com/) account
 - A [GitHub](https://github.com/) account
 
-## Architecture Overview
+# Architecture Overview
 
-### CI/CD Pipeline
+## CI/CD Pipeline
 
 ![CI/CD Pipeline](./assets/cicd-pipeline.png)
 
@@ -78,7 +75,7 @@ The CI/CD pipeline follows these steps:
 10. Application logs to Cloud Logging
 11. Metrics sent to Cloud Monitoring
 
-### Application Architecture
+## Application Architecture
 
 ![Application Architecture](./assets/app-architecture.png)
 
@@ -123,7 +120,7 @@ This guide will walk you through setting up and deploying a YouTube clone applic
    --display-name="Terraform Service Account"
    ```
 
-# Grant necessary roles for Terraform
+## Grant necessary roles for Terraform
 
 ```bash
 # Create a dedicated service account for Terraform operations
@@ -263,11 +260,11 @@ app_name = "myapp"
 
 7.
 
-# Setup Guide for Firebase and MongoDB
+## Setup Guide for Firebase and MongoDB
 
 This guide will help you set up a Firebase account, configure your Firebase settings, create a MongoDB cluster, and store your secrets in Google Cloud Secret Manager.
 
-## 1. Create a Firebase Account
+### 1. Create a Firebase Account
 
 1. Go to the [Firebase Console](https://console.firebase.google.com/).
 2. Click on **"Get Started"**.
@@ -276,7 +273,7 @@ This guide will help you set up a Firebase account, configure your Firebase sett
 5. Follow the prompts to set up your project, and make sure to enable **Google Analytics** if needed.
 6. Once the project is created, click on **"Continue"**.
 
-## 2. Configure Domain Access
+### 2. Configure Domain Access
 
 To allow your custom domain to access your Firebase project, follow these steps:
 
@@ -286,7 +283,7 @@ To allow your custom domain to access your Firebase project, follow these steps:
 4. Enter your domain name (e.g., `markbosire.click` or `www.markbosire.click`).
 5. Click **"Save"** to authorize the domain.
 
-## 3. Configure `./client/src/firebase.js`
+### 3. Configure `./client/src/firebase.js`
 
 1. In your Firebase project, click on the **"Settings"** icon (⚙️) next to **"Project Overview"** in the left sidebar.
 2. Under **"Your apps"**, click on **"Web"** to register a web app.
@@ -308,7 +305,7 @@ const firebaseConfig = {
 
 Make sure to copy the `apiKey` from the Firebase settings later .
 
-## 4. Create a MongoDB Cluster
+### 4. Create a MongoDB Cluster
 
 1. Go to the [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) website.
 2. Sign up for a new account or log in if you already have one.
@@ -317,7 +314,7 @@ Make sure to copy the `apiKey` from the Firebase settings later .
 5. Select the cluster tier that fits your needs (you can start with the free tier).
 6. Click on **"Create Cluster"** and wait for your cluster to be provisioned.
 
-### 5. Get Your MongoDB URI
+#### 5. Get Your MongoDB URI
 
 1. Once your cluster is created, click on **"Connect"**.
 2. Choose **"Connect your application"**.
@@ -329,7 +326,7 @@ Make sure to copy the `apiKey` from the Firebase settings later .
 
 4. Replace `<username>`, `<password>`, and `<dbname>` with your actual values.
 
-## 6. Storing Secrets in Google Cloud Secret Manager
+### 6. Storing Secrets in Google Cloud Secret Manager
 
 Now, you'll need to store your secrets in Google Cloud Secret Manager.
 
@@ -371,13 +368,13 @@ Now, you'll need to store your secrets in Google Cloud Secret Manager.
    make terraform-action ENV=staging TF_ACTION=apply
    ```
 
-## Technical Documentation
+# Technical Documentation
 
 For detailed technical documentation, please refer to:
 
 - [Infrastructure](./docs/infrastructure.md)
 - [CI/CD](./docs/CI-CD.md)
 
-## License
+# License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
