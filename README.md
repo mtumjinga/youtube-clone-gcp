@@ -129,8 +129,7 @@ This guide will walk you through setting up and deploying a YouTube clone applic
    a. Create a Terraform Service Account:
 
    ```bash
-   # Replace PROJECT_ID with your GCP project ID
-   # Replace PROJECT_ID with your GCP project ID
+    # Replace PROJECT_ID with your GCP project ID
    gcloud iam service-accounts create terraform-sa \
    --display-name="Terraform Service Account"
    ```
