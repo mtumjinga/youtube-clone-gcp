@@ -68,13 +68,14 @@ resource "google_compute_instance" "app_instance" {
   }
 
   service_account {
-    scopes = ["storage-ro"]
+    scopes = ["storage-ro","logging-write","monitoring-write","monitoring-read","monitoring"]
   }
 
-  metadata_startup_script = <<-EOT
-    #! /bin/bash
-    # Custom startup script
-  EOT
+   metadata_startup_script = <<-EOF
+    #!/bin/bash
+   curl -sSO https://dl.google.com/cloudagents/add-google-cloud-ops-agent-repo.sh
+   sudo bash add-google-cloud-ops-agent-repo.sh --also-install
+  EOF
 }
 
 # UNMANAGED INSTANCE GROUP
