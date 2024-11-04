@@ -1,7 +1,7 @@
 PROJECT_ID=banded-meridian-435911-g6
 ZONE=us-east4-c
 VM_PATH=/home/${USER}/app
-REPO_URL=https://github.com/markbosire/youtubbe-clone-gcp.git
+REPO_URL=https://github.com/markbosire/youtube-clone-gcp.git
 APP_NAME=youtube
 VM_NAME=$(APP_NAME)-instance-$(ENV)
 GITHUB_SHA?=latest
