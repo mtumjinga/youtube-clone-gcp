@@ -11,7 +11,9 @@ This repository contains a YouTube clone built using the MERN stack (MongoDB, Ex
   - [Prerequisites](#prerequisites)
 - [Architecture Overview](#architecture-overview)
   - [CI/CD Pipeline](#cicd-pipeline)
+- [Badges](#badges)
   - [Application Architecture](#application-architecture)
+- [Badges](#badges-1)
 - [SETUP](#setup)
   - [Initial Setup](#initial-setup)
   - [Grant necessary roles for Terraform](#grant-necessary-roles-for-terraform)
@@ -58,6 +60,12 @@ Production-ready infrastructure code for deploying scalable web applications on 
 # Architecture Overview
 
 ## CI/CD Pipeline
+# Badges
+[![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF.svg?style=for-the-badge&logo=githubactions&logoColor=white)](https://github.com/features/actions)
+[![Docker](https://img.shields.io/badge/Docker-2496ED.svg?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
+[![Docker Compose](https://img.shields.io/badge/Docker_Compose-2496ED.svg?style=for-the-badge&logo=docker&logoColor=white)](https://docs.docker.com/compose/)
+[![GCP](https://img.shields.io/badge/Google_Cloud-4285F4.svg?style=for-the-badge&logo=google-cloud&logoColor=white)](https://cloud.google.com/)
+
 
 ![CI/CD Pipeline](./assets/cicd-pipeline.png)
 
@@ -76,6 +84,15 @@ The CI/CD pipeline follows these steps:
 11. Metrics sent to Cloud Monitoring
 
 ## Application Architecture
+# Badges
+[![GCP](https://img.shields.io/badge/Google_Cloud-4285F4.svg?style=for-the-badge&logo=google-cloud&logoColor=white)](https://cloud.google.com/)
+[![NGINX](https://img.shields.io/badge/NGINX-009639.svg?style=for-the-badge&logo=nginx&logoColor=white)](https://www.nginx.com/)
+[![React](https://img.shields.io/badge/React-61DAFB.svg?style=for-the-badge&logo=react&logoColor=white)](https://reactjs.org/)
+[![Firebase](https://img.shields.io/badge/Firebase-FFCA28.svg?style=for-the-badge&logo=firebase&logoColor=white)](https://firebase.google.com/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-47A248.svg?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
+[![Node.js](https://img.shields.io/badge/Node.js-8CC84B.svg?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
+[![Docker](https://img.shields.io/badge/Docker-2496ED.svg?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
+
 
 ![Application Architecture](./assets/app-architecture.png)
 
