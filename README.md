@@ -1,4 +1,4 @@
-# YouTube Clone MERN Stack with GCP
+# YYouTube Clone MERN Stack with GCP
 
 This repository contains a YouTube clone built using the MERN stack (MongoDB, Express.js, React.js, Node.js) and deployed on Google Cloud Platform (GCP) using Terraform. The CI/CD pipeline was made using github actions.
 
