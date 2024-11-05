@@ -1,4 +1,4 @@
-PROJECT_ID=banded-meridian-435911-g6
+PROJECT_ID=anothertest-440718
 ZONE=us-east4-c
 VM_PATH=/home/${USER}/app
 REPO_URL=https://github.com/markbosire/youtube-clone-gcp.git
@@ -48,7 +48,6 @@ terraform-action: check-env
 		terraform $(TF_ACTION) \
 		-var-file="./environments/common.tfvars" \
 		-var-file="./environments/$(ENV)/config.tfvars"
-
 ssh: check-env
 	gcloud compute ssh --zone $(ZONE) --project $(PROJECT_ID) $(VM_NAME)
 

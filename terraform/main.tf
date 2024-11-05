@@ -1,6 +1,6 @@
 terraform {
   backend "gcs" {
-    bucket = "${gcp_project_id}-terraform"
+    bucket = "anothertest-440718-terraform"
     prefix = "/state/youtube"
   }
 }

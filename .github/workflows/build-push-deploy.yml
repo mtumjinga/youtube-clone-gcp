@@ -2,10 +2,10 @@ name: Build and Deploy to Google Compute Engine
 #remove the comments to enable github actions
 on:
   push:
-    #branches:
-    # - main
-    #tags:
-    #- v\d+\.\d+\.\d+
+    branches:
+     - main
+    tags:
+    - v\d+\.\d+\.\d+
 
 jobs:
   setup-build-publish-deploy:

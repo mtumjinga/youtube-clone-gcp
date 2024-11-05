@@ -3,11 +3,11 @@ import { getAuth, GoogleAuthProvider } from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
-  authDomain: "clone-59a2e.firebaseapp.com",
-  projectId: "clone-59a2e",
-  storageBucket: "clone-59a2e.appspot.com",
-  messagingSenderId: "510132767380",
-  appId: "1:510132767380:web:9963ad58a8f85f3219c281",
+  authDomain: "gcp-clone-e980f.firebaseapp.com",
+  projectId: "gcp-clone-e980f",
+  storageBucket: "gcp-clone-e980f.firebasestorage.app",
+  messagingSenderId: "542436036899",
+  appId: "1:542436036899:web:8aba89c38f941311fdfc96"
 };
 console.log("Firebase API Key:", process.env.REACT_APP_FIREBASE_API_KEY);
 const app = initializeApp(firebaseConfig);

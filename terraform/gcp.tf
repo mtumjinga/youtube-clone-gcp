@@ -4,10 +4,22 @@ provider "google" {
   region      = "us-east4"
   zone        = "us-east4-c"
 }
+resource "google_project_service" "logging_api" {
+  project = "anothertest-440718"
+  service = "logging.googleapis.com"
+}
+
+resource "google_project_service" "monitoring_api" {
+  project = "anothertest-440718"
+  service = "monitoring.googleapis.com"
+}
+
+resource "google_project_service" "secret_manager_api" {
+  project = "anothertest-440718"
+  service = "secretmanager.googleapis.com"
+}
 
 # Define the domain name as a variable
-
-
 # IP ADDRESS
 resource "google_compute_global_address" "ip_address" {
   name = "${var.app_name}-ip-${terraform.workspace}"
