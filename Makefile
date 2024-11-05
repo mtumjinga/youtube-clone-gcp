@@ -105,6 +105,7 @@ deploy: check-env
 	@echo "Deploying new container versions with docker compose..."
 	@$(MAKE) ssh-cmd CMD='export REACT_APP_FIREBASE_API_KEY=\"$(shell gcloud secrets versions access latest --secret="REACT_APP_FIREBASE_API_KEY" --project=$(PROJECT_ID))\" && \
 	export IMAGE_TAG=\"$(IMAGE_TAG)\" && \
+	export PROJECT_ID=\"$(PROJECT_ID)\" && \
 	export MONGO=\"$(shell gcloud secrets versions access latest --secret="MONGO" --project=$(PROJECT_ID))\" && \
 	export JWT=\"$(shell gcloud secrets versions access latest --secret="JWT" --project=$(PROJECT_ID))\" && \
 	cd $(VM_PATH) && \
