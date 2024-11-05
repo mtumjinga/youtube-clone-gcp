@@ -14,6 +14,7 @@ This repository contains a YouTube clone built using the MERN stack (MongoDB, Ex
   - [Application Architecture](#application-architecture)
 - [Setup](#setup)
   - [Initial Setup](#initial-setup)
+  - [Enable apis](#enable-apis)
   - [Grant necessary roles for Terraform](#grant-necessary-roles-for-terraform)
       - [Example `common.tfvars` File](#example-commontfvars-file)
   - [Setup Guide for Firebase and MongoDB](#setup-guide-for-firebase-and-mongodb)
@@ -125,19 +126,28 @@ This guide will walk you through setting up and deploying a YouTube clone applic
    cd youtube-clone-gcp
    ```
 
-2. Set Up GCP Service Accounts
+2. Set Up GCP Service Accounts and enable apis
+## Enable apis
+```bash
+gcloud services enable compute.googleapis.com && \
+gcloud services enable dns.googleapis.com && \
+gcloud services enable storage.googleapis.com && \
+gcloud services enable monitoring.googleapis.com && \
+gcloud services enable logging.googleapis.com && \
+gcloud services enable cloudresourcemanager.googleapis.com && \
+gcloud services enable secretmanager.googleapis.com && \
+gcloud services enable iam.googleapis.com && \
+gcloud services enable artifactregistry.googleapis.com
 
-   a. Create a Terraform Service Account:
-
-   ```bash
-    # Replace PROJECT_ID with your GCP project ID
-   gcloud iam service-accounts create terraform-sa \
-   --display-name="Terraform Service Account"
-   ```
+```
 
 ## Grant necessary roles for Terraform
 
 ```bash
+
+# Set the GCP project ID (replace with your actual project ID)
+export PROJECT_ID=your-project-id
+
 # Create a dedicated service account for Terraform operations
 # This account will be used to manage infrastructure and deploy resources
 gcloud iam service-accounts create terraform-sa \
@@ -146,48 +156,58 @@ gcloud iam service-accounts create terraform-sa \
 # Grant Compute Admin role
 # Allows Terraform to create, modify, and delete compute resources like VMs and disks
 # Essential for managing compute infrastructure
-gcloud projects add-iam-policy-binding PROJECT_ID \
-  --member="serviceAccount:terraform-sa@PROJECT_ID.iam.gserviceaccount.com" \
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+  --member="serviceAccount:terraform-sa@$PROJECT_ID.iam.gserviceaccount.com" \
   --role="roles/compute.admin"
 
 # Grant Compute Network User role
 # Enables Terraform to use GCP networking features
 # Required for configuring network interfaces, firewall rules, and VPC settings
-gcloud projects add-iam-policy-binding PROJECT_ID \
-  --member="serviceAccount:terraform-sa@PROJECT_ID.iam.gserviceaccount.com" \
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+  --member="serviceAccount:terraform-sa@$PROJECT_ID.iam.gserviceaccount.com" \
   --role="roles/compute.networkUser"
 
 # Grant DNS Administrator role
 # Allows Terraform to manage DNS records and zones
 # Necessary if your infrastructure requires DNS configuration
-gcloud projects add-iam-policy-binding PROJECT_ID \
-  --member="serviceAccount:terraform-sa@PROJECT_ID.iam.gserviceaccount.com" \
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+  --member="serviceAccount:terraform-sa@$PROJECT_ID.iam.gserviceaccount.com" \
   --role="roles/dns.admin"
 
 # Grant Service Account User role
 # Enables Terraform to run operations as other service accounts
 # Required for deploying resources that use service accounts
-gcloud projects add-iam-policy-binding PROJECT_ID \
-  --member="serviceAccount:terraform-sa@PROJECT_ID.iam.gserviceaccount.com" \
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+  --member="serviceAccount:terraform-sa@$PROJECT_ID.iam.gserviceaccount.com" \
   --role="roles/iam.serviceAccountUser"
 
 # Grant Storage Object Admin role
 # Allows Terraform to manage storage objects and buckets
 # Required for managing Terraform state files in GCS and other storage operations
-gcloud projects add-iam-policy-binding PROJECT_ID \
-  --member="serviceAccount:terraform-sa@PROJECT_ID.iam.gserviceaccount.com" \
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+  --member="serviceAccount:terraform-sa@$PROJECT_ID.iam.gserviceaccount.com" \
   --role="roles/storage.objectAdmin"
 
 # Create and download the service account key
 # This key file will be used by Terraform to authenticate with GCP
 # IMPORTANT: Keep this key secure and never commit it to version control
 gcloud iam service-accounts keys create terraform-sa-key.json \
-  --iam-account=terraform-sa@PROJECT_ID.iam.gserviceaccount.com
+  --iam-account=terraform-sa@$PROJECT_ID.iam.gserviceaccount.com
+
+mv terraform-sa-key.json terraform
 ```
 
 b. Configure Workload Identity Federation for GitHub Actions:
 
 ```bash
+# Create a Workload Identity Pool
+# Set the GCP project ID (replace with your actual project ID)
+export PROJECT_ID="YOUR PROJECT ID"
+# Set the GITHUB USERNAME (replace with your actual USERNAME)
+export GITHUB_USERNAME="YOUR GITHUB USERNAME"
+# Obtain GCP Project Number
+PROJECT_NUMBER=$(gcloud projects describe $PROJECT_ID --format="value(projectNumber)")
+
 # Create a Workload Identity Pool
 gcloud iam workload-identity-pools create "github-pool" \
   --project="${PROJECT_ID}" \
@@ -201,6 +221,7 @@ gcloud iam workload-identity-pools providers create-oidc "github-provider" \
   --workload-identity-pool="github-pool" \
   --display-name="GitHub Provider" \
   --attribute-mapping="google.subject=assertion.sub,attribute.actor=assertion.actor,attribute.repository=assertion.repository" \
+  --attribute-condition="assertion.repository_owner==$GITHUB_USERNAME"\
   --issuer-uri="https://token.actions.githubusercontent.com"
 
 # Create a Service Account for GitHub Actions
@@ -208,52 +229,62 @@ gcloud iam service-accounts create github-actions-sa \
   --display-name="GitHub Actions Service Account"
 
 # Grant required roles for GitHub Actions
-gcloud projects add-iam-policy-binding PROJECT_ID \
-  --member="serviceAccount:github-actions-sa@PROJECT_ID.iam.gserviceaccount.com" \
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+  --member="serviceAccount:github-actions-sa@$PROJECT_ID.iam.gserviceaccount.com" \
   --role="roles/artifactregistry.admin"
 
-gcloud projects add-iam-policy-binding PROJECT_ID \
-  --member="serviceAccount:github-actions-sa@PROJECT_ID.iam.gserviceaccount.com" \
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+  --member="serviceAccount:github-actions-sa@$PROJECT_ID.iam.gserviceaccount.com" \
   --role="roles/compute.instanceAdmin"
 
-gcloud projects add-iam-policy-binding PROJECT_ID \
-  --member="serviceAccount:github-actions-sa@PROJECT_ID.iam.gserviceaccount.com" \
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+  --member="serviceAccount:github-actions-sa@$PROJECT_ID.iam.gserviceaccount.com" \
   --role="roles/logging.logWriter"
 
-gcloud projects add-iam-policy-binding PROJECT_ID \
-  --member="serviceAccount:github-actions-sa@PROJECT_ID.iam.gserviceaccount.com" \
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+  --member="serviceAccount:github-actions-sa@$PROJECT_ID.iam.gserviceaccount.com" \
   --role="roles/secretmanager.secretAccessor"
 
-gcloud projects add-iam-policy-binding PROJECT_ID \
-  --member="serviceAccount:github-actions-sa@PROJECT_ID.iam.gserviceaccount.com" \
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+  --member="serviceAccount:github-actions-sa@$PROJECT_ID.iam.gserviceaccount.com" \
   --role="roles/iam.serviceAccountUser"
 
-gcloud projects add-iam-policy-binding PROJECT_ID \
-  --member="serviceAccount:github-actions-sa@PROJECT_ID.iam.gserviceaccount.com" \
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+  --member="serviceAccount:github-actions-sa@$PROJECT_ID.iam.gserviceaccount.com" \
   --role="roles/storage.admin"
 
- # Obtain GCP Project Number copy the output
- gcloud projects describe $PROJECT_ID --format="value(projectNumber)"
+  gcloud projects add-iam-policy-binding $PROJECT_ID \
+  --member="serviceAccount:github-actions-sa@$PROJECT_ID.iam.gserviceaccount.com" \
+  --role="roles/artifactregistry.createOnPushWriter"
 
 # Allow GitHub Actions to impersonate the service account
 gcloud iam service-accounts add-iam-policy-binding \
-  github-actions-sa@PROJECT_ID.iam.gserviceaccount.com \
+  github-actions-sa@$PROJECT_ID.iam.gserviceaccount.com \
   --project="${PROJECT_ID}" \
   --role="roles/iam.workloadIdentityUser" \
-  --member="principalSet://iam.googleapis.com/projects/PROJECT_NUMBER/locations/global/workloadIdentityPools/github-pool/attribute.repository/YOUR_GITHUB_USERNAME/youtube-clone-gcp"
+  --member="principalSet://iam.googleapis.com/projects/$PROJECT_NUMBER/locations/global/workloadIdentityPools/github-pool/attribute.repository/$GITHUB_USERNAME/youtube-clone-gcp"```
 ```
-
 3. Configure GitHub Repository Secrets
 
    Add the following secrets in your GitHub repository (Settings > Secrets and variables > Actions > secrets):
 
    - `PROJECT_ID`: Your Google Cloud Project ID
-   - `WORKLOAD_IDENTITY_PROVIDER`: The Workload Identity Provider ID
+   - `WORKLOAD_IDENTITY_PROVIDER`: The Workload Identity Provider ID in this format'(projects/$PROJECT_NUMBER/locations/global/workloadIdentityPools/github-pool/providers/github-provider)'
+     you could get the project number using this command
+     ```bash
+    export PROJECT_ID="YOUR PROJECT ID"
+    # Obtain GCP Project Number
+    gcloud projects describe $PROJECT_ID --format="value(projectNumber)"
+     ```
    - `SERVICE_ACCOUNT`: The GitHub Actions service account email
 
+    ```bash
+    export PROJECT_ID="YOUR PROJECT ID"
+    gcloud iam service-accounts list --project=$PROJECT_ID
+    ```
 4. Update GitHub Actions Workflow
 
-   Edit `.github/workflows/main.yml` and uncomment the push section. Ensure the workload identity provider and service account details are correctly configured.
+   Edit `.github/workflows/build-push-deploy.yml` and uncomment the push section. Ensure the workload identity provider and service account details are correctly configured.
 
 5. Configure Variables in `terraform/environments/common.tfvars`
 
@@ -294,22 +325,29 @@ To allow your custom domain to access your Firebase project, follow these steps:
 
 1. In the Firebase Console, go to **"Authentication"** from the left sidebar.
 2. Click on the **"Sign-in method"** tab.
-3. Scroll down to **"Authorized domains"** and click **"Add domain"**.
-4. Enter your domain name (e.g., `markbosire.click` or `www.markbosire.click`).
-5. Click **"Save"** to authorize the domain.
+3. Go to the Sign-in method tab.
+4. Scroll down to Google and click the edit pencil icon.
+5. Toggle Enable to on.
+6. Add a Project support email if prompted.
+7. Click Save.
+8. Go to the Settings method tab.
+9. Scroll down to **"Authorized domains"** and click **"Add domain"**.
+10. Enter your domain name (e.g., `markbosire.click` or `www.markbosire.click`).
+11. Click **"Save"** to authorize the domain.
 
 ### 3. Configure `./client/src/firebase.js`
 
 1. In your Firebase project, click on the **"Settings"** icon (⚙️) next to **"Project Overview"** in the left sidebar.
 2. Under **"Your apps"**, click on **"Web"** to register a web app.
 3. After registering, you will see your Firebase configuration settings.
-4. Copy the **`apiKey`** that you will set later and replace the values of the others in your `firebase.js` file later.
+4. Copy the **`apiKey`** that you will set later 
+5. Replace the values of the others in your `.client/src/firebase.js` file.
 
-Here is how your the values should look:
+Here is how your the config should look but the values will be different:
 
 ```javascript
 const firebaseConfig = {
-  apiKey: "YOUR_FIREBASE_API_KEY", // Replace this value later with your API key
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY, 
   authDomain: "clone-59a2e.firebaseapp.com",
   projectId: "clone-59a2e",
   storageBucket: "clone-59a2e.appspot.com",
@@ -328,6 +366,7 @@ Make sure to copy the `apiKey` from the Firebase settings later .
 4. Choose **Google Cloud Platform (GCP)** as your cloud provider and select the appropriate region for your cluster.
 5. Select the cluster tier that fits your needs (you can start with the free tier).
 6. Click on **"Create Cluster"** and wait for your cluster to be provisioned.
+7. Ensure you have access to everywhere in the network access
 
 #### 5. Get Your MongoDB URI
 
@@ -354,26 +393,65 @@ Now, you'll need to store your secrets in Google Cloud Secret Manager.
 2. **Create each secret**:
 
    ```bash
-   # Create MONGO secret
-   gcloud secrets create MONGO --replication-policy="automatic"
-   echo -n "YOUR_MONGO_URI" | gcloud secrets versions add MONGO --data-file=-
+    # Export environment variables for secrets
+# Generate a JWT secret and export it
+export JWT_SECRET=$(openssl rand -base64 32)
+echo "Generated JWT_SECRET: $JWT_SECRET"
 
-   # Create JWT secret
-   gcloud secrets create JWT --replication-policy="automatic"
-   echo -n "YOUR_JWT_SECRET" | gcloud secrets versions add JWT --data-file=-
+# Export other environment variables for secrets
+export MONGO_URI="YOUR_MONGO_URI"
+export FIREBASE_API_KEY="YOUR_FIREBASE_API_KEY"
 
-   # Create REACT_APP_FIREBASE_API_KEY secret
-   gcloud secrets create REACT_APP_FIREBASE_API_KEY --replication-policy="automatic"
-   echo -n "YOUR_FIREBASE_API_KEY" | gcloud secrets versions add REACT_APP_FIREBASE_API_KEY --data-file=-
+# Create MONGO secret
+gcloud secrets create MONGO --replication-policy="automatic"
+echo -n "$MONGO_URI" | gcloud secrets versions add MONGO --data-file=-
+
+# Create JWT secret
+gcloud secrets create JWT --replication-policy="automatic"
+echo -n "$JWT_SECRET" | gcloud secrets versions add JWT --data-file=-
+
+# Create REACT_APP_FIREBASE_API_KEY secret
+gcloud secrets create REACT_APP_FIREBASE_API_KEY --replication-policy="automatic"
+echo -n "$FIREBASE_API_KEY" | gcloud secrets versions add REACT_APP_FIREBASE_API_KEY --data-file=-
+
    ```
 
-   Replace `YOUR_MONGO_URI`, `YOUR_JWT_SECRET`, and `YOUR_FIREBASE_API_KEY` with your actual values.
+   Replace `YOUR_MONGO_URI` and `YOUR_FIREBASE_API_KEY` with your actual values and take note of your jwt secrets incase of any issue.
 
 3. Initialize the Project
+   Change PROJECT_ID in `./Makefile`
+   ```Makefile
+   PROJECT_ID=banded-meridian-435911-g6#change this to your project id
+   ```
+   create backend
+   ```bash
+   make create-tf-backend-bucket
+   ```
+   confirm if terraform-sa-key.json is in the terraform folder
+   ```bash
+   cd terraform
+   ls
+   ```
+   Edit the project id in `./main.tf`
+   ```hcl
+    backend "gcs" {
+    bucket = "banded-meridian-435911-g6-terraform"#change the project id(banded-meridian-435911-g6) to youurs
+    prefix = "/state/youtube"
+  }
+   ```
+
+   if it's there add the application credentials for terraform to use and initialize it
 
    ```bash
+   export GOOGLE_APPLICATION_CREDENTIALS=terraform-sa-key.json
+   terraform init
+   ```
+
+   ```bash
+   #move to the main folder
+   cd ../
    # Create the Terraform backend bucket
-   make create-tf-backend-bucket
+   
 
    # Initialize Terraform workspace
    make terraform-create-workspace ENV=staging
@@ -382,7 +460,12 @@ Now, you'll need to store your secrets in Google Cloud Secret Manager.
    # Deploy infrastructure
    make terraform-action ENV=staging TF_ACTION=apply
    ```
-
+4. Start CI-CD pipeline
+   ```bash
+   git add .
+   git commit -m "your message"
+   git push origin main
+   ```
 # Technical Documentation
 
 For detailed technical documentation, please refer to:

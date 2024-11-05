@@ -5,7 +5,6 @@ provider "google" {
   zone        = "us-east4-c"
 }
 
-# Define the domain name as a variable
 
 
 # IP ADDRESS

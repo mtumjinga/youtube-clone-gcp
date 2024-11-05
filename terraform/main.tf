@@ -1,6 +1,6 @@
 terraform {
   backend "gcs" {
-    bucket = "${gcp_project_id}-terraform"
+    bucket = "banded-meridian-435911-g6-terraform"#change the project id
     prefix = "/state/youtube"
   }
 }
