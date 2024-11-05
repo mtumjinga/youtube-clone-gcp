@@ -1,6 +1,7 @@
+
 # YouTube Clone MERN Stack with GCP
 
-This repository contains a YouTube clone built using the MERN stack (MongoDB, Express.js, React.js, Node.js) and deployed on Google Cloud Platform (GCP) using Terraform. The CI/CD pipeline was made using github actions.
+This repository contains a YouTube clone built using the MERN stack (MongoDB, Express.js, React.js, Node.js) and deployed on Google Cloud Platform (GCP) using Terraform. The CI/CD pipeline was made using GitHub Actions.
 
 # Table of Contents
 
@@ -14,8 +15,8 @@ This repository contains a YouTube clone built using the MERN stack (MongoDB, Ex
   - [Application Architecture](#application-architecture)
 - [Setup](#setup)
   - [Initial Setup](#initial-setup)
-  - [Enable apis](#enable-apis)
-  - [Grant necessary roles for Terraform](#grant-necessary-roles-for-terraform)
+  - [Enable APIs](#enable-apis)
+  - [Grant Necessary Roles for Terraform](#grant-necessary-roles-for-terraform)
       - [Example `common.tfvars` File](#example-commontfvars-file)
   - [Setup Guide for Firebase and MongoDB](#setup-guide-for-firebase-and-mongodb)
     - [1. Create a Firebase Account](#1-create-a-firebase-account)
@@ -23,14 +24,10 @@ This repository contains a YouTube clone built using the MERN stack (MongoDB, Ex
     - [3. Configure `./client/src/firebase.js`](#3-configure-clientsrcfirebasejs)
     - [4. Create a MongoDB Cluster](#4-create-a-mongodb-cluster)
       - [5. Get Your MongoDB URI](#5-get-your-mongodb-uri)
-    - [6. Enable domain cors origin](#6-enable-domain-cors-origin)
+    - [6. Enable Domain CORS Origin](#6-enable-domain-cors-origin)
     - [7. Storing Secrets in Google Cloud Secret Manager](#7-storing-secrets-in-google-cloud-secret-manager)
 - [Technical Documentation](#technical-documentation)
 - [License](#license)
-
---- 
-
-
 
 # GCP Infrastructure as Code
 
@@ -67,22 +64,21 @@ Production-ready infrastructure code for deploying scalable web applications on 
 [![Docker Compose](https://img.shields.io/badge/Docker_Compose-2496ED.svg?style=for-the-badge&logo=docker&logoColor=white)](https://docs.docker.com/compose/)
 [![GCP](https://img.shields.io/badge/Google_Cloud-4285F4.svg?style=for-the-badge&logo=google-cloud&logoColor=white)](https://cloud.google.com/)
 
-
 ![CI/CD Pipeline](./assets/cicd-pipeline.png)
 
 The CI/CD pipeline follows these steps:
 
-1. Code is pushed to GitHub repository
-2. GitHub Actions workflow is triggered
+1. Code is pushed to the GitHub repository
+2. The GitHub Actions workflow is triggered
 3. Workload Identity Federation authenticates with GCP
 4. GCloud authentication configures Docker
-5. Docker image is built
+5. The Docker image is built
 6. The Build process uses secrets from Secret Manager
-7. Image is pushed to Artifact Registry
+7. The image is pushed to Artifact Registry
 8. Deployment to Compute Engine
-9. Container pulls secrets from Secret Manager
+9. The container pulls secrets from Secret Manager
 10. Application logs to Cloud Logging
-11. Metrics sent to Cloud Monitoring
+11. Metrics are sent to Cloud Monitoring
 
 ## Application Architecture
 
@@ -94,7 +90,6 @@ The CI/CD pipeline follows these steps:
 [![Node.js](https://img.shields.io/badge/Node.js-8CC84B.svg?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
 [![Docker](https://img.shields.io/badge/Docker-2496ED.svg?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
 
-
 ![Application Architecture](./assets/app-architecture.png)
 
 The application flow works as follows:
@@ -102,15 +97,15 @@ The application flow works as follows:
 1. User requests reach Cloud DNS
 2. Traffic is routed through Cloud CDN
 3. Static content is served from Cloud Storage
-4. Load Balancer routes requests to instances
-5. Compute Engine runs containerized application
-6. Container images pulled from Artifact Registry
-7. NGINX serves as reverse proxy
-8. React frontend served from built assets
+4. The Load Balancer routes requests to instances
+5. Compute Engine runs the containerized application
+6. Container images are pulled from Artifact Registry
+7. NGINX serves as a reverse proxy
+8. The React frontend is served from built assets
 9. Express.js handles API requests
-10. Backend connects to MongoDB
+10. The backend connects to MongoDB
 11. Firebase handles authentication
-12. Media content stored in Cloud Storage
+12. Media content is stored in Cloud Storage
 
 # Setup
 
@@ -127,8 +122,10 @@ This guide will walk you through setting up and deploying a YouTube clone applic
    cd youtube-clone-gcp
    ```
 
-2. Set Up GCP Service Accounts and enable apis
-## Enable apis
+2. Set Up GCP Service Accounts and enable APIs
+
+## Enable APIs
+
 ```bash
 gcloud services enable compute.googleapis.com && \
 gcloud services enable dns.googleapis.com && \
@@ -139,13 +136,11 @@ gcloud services enable cloudresourcemanager.googleapis.com && \
 gcloud services enable secretmanager.googleapis.com && \
 gcloud services enable iam.googleapis.com && \
 gcloud services enable artifactregistry.googleapis.com
-
 ```
 
-## Grant necessary roles for Terraform
+## Grant Necessary Roles for Terraform
 
 ```bash
-
 # Set the GCP project ID (replace with your actual project ID)
 export PROJECT_ID=your-project-id
 
@@ -222,7 +217,7 @@ gcloud iam workload-identity-pools providers create-oidc "github-provider" \
   --workload-identity-pool="github-pool" \
   --display-name="GitHub Provider" \
   --attribute-mapping="google.subject=assertion.sub,attribute.actor=assertion.actor,attribute.repository=assertion.repository" \
-  --attribute-condition="assertion.repository_owner==$GITHUB_USERNAME"\
+  --attribute-condition="assertion.repository_owner==$GITHUB_USERNAME" \
   --issuer-uri="https://token.actions.githubusercontent.com"
 
 # Create a Service Account for GitHub Actions
@@ -254,7 +249,7 @@ gcloud projects add-iam-policy-binding $PROJECT_ID \
   --member="serviceAccount:github-actions-sa@$PROJECT_ID.iam.gserviceaccount.com" \
   --role="roles/storage.admin"
 
-  gcloud projects add-iam-policy-binding $PROJECT_ID \
+gcloud projects add-iam-policy-binding $PROJECT_ID \
   --member="serviceAccount:github-actions-sa@$PROJECT_ID.iam.gserviceaccount.com" \
   --role="roles/artifactregistry.createOnPushWriter"
 
@@ -263,19 +258,19 @@ gcloud iam service-accounts add-iam-policy-binding \
   github-actions-sa@$PROJECT_ID.iam.gserviceaccount.com \
   --project="${PROJECT_ID}" \
   --role="roles/iam.workloadIdentityUser" \
-  --member="principalSet://iam.googleapis.com/projects/$PROJECT_NUMBER/locations/global/workloadIdentityPools/github-pool/attribute.repository/$GITHUB_USERNAME/youtube-clone-gcp"```
+  --member="principalSet://iam.googleapis.com/projects/$PROJECT_NUMBER/locations/global/workloadIdentityPools/github-pool/attribute.repository/$GITHUB_USERNAME/youtube-clone-gcp"
 ```
 3. Configure GitHub Repository Secrets
 
    Add the following secrets in your GitHub repository (Settings > Secrets and variables > Actions > secrets):
 
    - `PROJECT_ID`: Your Google Cloud Project ID
-   - `WORKLOAD_IDENTITY_PROVIDER`: The Workload Identity Provider ID in this format'(projects/$PROJECT_NUMBER/locations/global/workloadIdentityPools/github-pool/providers/github-provider)'
-     you could get the project number using this command
+   - `WORKLOAD_IDENTITY_PROVIDER`: The Workload Identity Provider ID in this format '(projects/$PROJECT_NUMBER/locations/global/workloadIdentityPools/github-pool/providers/github-provider)'
+     You can get the project number using this command:
      ```bash
-    export PROJECT_ID="YOUR PROJECT ID"
-    # Obtain GCP Project Number
-    gcloud projects describe $PROJECT_ID --format="value(projectNumber)"
+     export PROJECT_ID="YOUR PROJECT ID"
+     # Obtain GCP Project Number
+     gcloud projects describe $PROJECT_ID --format="value(projectNumber)"
      ```
    - `SERVICE_ACCOUNT`: The GitHub Actions service account email
 
@@ -283,6 +278,7 @@ gcloud iam service-accounts add-iam-policy-binding \
     export PROJECT_ID="YOUR PROJECT ID"
     gcloud iam service-accounts list --project=$PROJECT_ID
     ```
+
 4. Update GitHub Actions Workflow
 
    Edit `.github/workflows/build-push-deploy.yml` and uncomment the push section. Ensure the workload identity provider and service account details are correctly configured.
@@ -302,10 +298,7 @@ domain_name = "yourdomain.com"
 
 # Application name to prefix resource names
 app_name = "myapp"
-
 ```
-
-7.
 
 ## Setup Guide for Firebase and MongoDB
 
@@ -317,7 +310,7 @@ This guide will help you set up a Firebase account, configure your Firebase sett
 2. Click on **"Get Started"**.
 3. If you don't have a Google account, create one. If you already have an account, log in.
 4. Once logged in, click on **"Add project"** to create a new project.
-5. Follow the prompts to set up your project, and make sure to enable **Google Analytics** if needed.
+5. Follow the prompts to set up your project and make sure to enable **Google Analytics** if needed.
 6. Once the project is created, click on **"Continue"**.
 
 ### 2. Configure Domain Access
@@ -341,10 +334,10 @@ To allow your custom domain to access your Firebase project, follow these steps:
 1. In your Firebase project, click on the **"Settings"** icon (⚙️) next to **"Project Overview"** in the left sidebar.
 2. Under **"Your apps"**, click on **"Web"** to register a web app.
 3. After registering, you will see your Firebase configuration settings.
-4. Copy the **`apiKey`** that you will set later 
+4. Copy the **`apiKey`** that you will set later.
 5. Replace the values of the others in your `.client/src/firebase.js` file.
 
-Here is how your the config should look but the values will be different:
+Here is how your the config should look, but the values will be different:
 
 ```javascript
 const firebaseConfig = {
@@ -357,7 +350,7 @@ const firebaseConfig = {
 };
 ```
 
-Make sure to copy the `apiKey` from the Firebase settings later .
+Make sure to copy the `apiKey` from the Firebase settings later.
 
 ### 4. Create a MongoDB Cluster
 
@@ -367,7 +360,7 @@ Make sure to copy the `apiKey` from the Firebase settings later .
 4. Choose **Google Cloud Platform (GCP)** as your cloud provider and select the appropriate region for your cluster.
 5. Select the cluster tier that fits your needs (you can start with the free tier).
 6. Click on **"Create Cluster"** and wait for your cluster to be provisioned.
-7. Ensure you have access to everywhere in the network access
+7. Ensure you have enabled access from anywhere in the network access.
 
 #### 5. Get Your MongoDB URI
 
@@ -381,9 +374,11 @@ Make sure to copy the `apiKey` from the Firebase settings later .
 
 4. Replace `<username>`, `<password>`, and `<dbname>` with your actual values.
 
-### 6. Enable domain cors origin
+### 6. Enable Domain CORS Origin
+
 Go to `./server/index.js`
-Edit the http and https domain to your domain
+Edit the http and https domain to your domain:
+
 ```javascript
     app.use(
       cors({
@@ -405,60 +400,67 @@ Now, you'll need to store your secrets in Google Cloud Secret Manager.
 1. **Enable the Secret Manager API**:
 
    ```bash
-      gcloud services enable secretmanager.googleapis.com
+   gcloud services enable secretmanager.googleapis.com
    ```
 
 2. **Create each secret**:
 
    ```bash
-      # Export environment variables for secrets
-      # Generate a JWT secret and export it
-      export JWT_SECRET=$(openssl rand -base64 32)
-      echo "Generated JWT_SECRET: $JWT_SECRET"
+   # Export environment variables for secrets
+   # Generate a JWT secret and export it
+   export JWT_SECRET=$(openssl rand -base64 32)
+   echo "Generated JWT_SECRET: $JWT_SECRET"
 
-     # Export other environment variables for secrets
-      export MONGO_URI="YOUR_MONGO_URI"
-      export FIREBASE_API_KEY="YOUR_FIREBASE_API_KEY"
+   # Export other environment variables for secrets
+   export MONGO_URI="YOUR_MONGO_URI"
+   export FIREBASE_API_KEY="YOUR_FIREBASE_API_KEY"
 
-      # Create MONGO secret
-        gcloud secrets create MONGO --replication-policy="automatic"
-        printf "%s" "$MONGO_URI" | gcloud secrets versions add MONGO --data-file=-
+   # Create MONGO secret
+   gcloud secrets create MONGO --replication-policy="automatic"
+   printf "%s" "$MONGO_URI" | gcloud secrets versions add MONGO --data-file=-
 
-        # Create JWT secret
-        gcloud secrets create JWT --replication-policy="automatic"
-        echo -n "$JWT_SECRET" | gcloud secrets versions add JWT --data-file=-
+   # Create JWT secret
+   gcloud secrets create JWT --replication-policy="automatic"
+   echo -n "$JWT_SECRET" | gcloud secrets versions add JWT --data-file=-
 
-        # Create REACT_APP_FIREBASE_API_KEY secret
-        gcloud secrets create REACT_APP_FIREBASE_API_KEY --replication-policy="automatic"
-        echo -n "$FIREBASE_API_KEY" | gcloud secrets versions add REACT_APP_FIREBASE_API_KEY --data-file=-
+   # Create REACT_APP_FIREBASE_API_KEY secret
+   gcloud secrets create REACT_APP_FIREBASE_API_KEY --replication-policy="automatic"
+   echo -n "$FIREBASE_API_KEY" | gcloud secrets versions add REACT_APP_FIREBASE_API_KEY --data-file=-
+   ```
 
-          ```
-
-   Replace `YOUR_MONGO_URI` and `YOUR_FIREBASE_API_KEY` with your actual values and take note of your jwt secrets incase of any issue.
+   Replace `YOUR_MONGO_URI` and `YOUR_FIREBASE_API_KEY` with your actual values and take note of your jwt secrets in case of any issue.
 
 3. Initialize the Project
-   Change PROJECT_ID in `./Makefile`
+
+   Change `PROJECT_ID` in `./Makefile`
+
    ```bash
-   PROJECT_ID=banded-meridian-435911-g6#change this to your project id
+   PROJECT_ID=banded-meridian-435911-g6 # change this to your project id
    ```
-   create backend
+
+   Create backend
+
    ```bash
    make create-tf-backend-bucket
    ```
-   confirm if terraform-sa-key.json is in the terraform folder
+
+   Confirm if `terraform-sa-key.json` is in the `terraform` folder
+
    ```bash
    cd terraform
    ls
    ```
-   Edit the project id in `./main.tf`
+
+   Edit the project ID in `./main.tf`
+
    ```hcl
-    backend "gcs" {
-    bucket = "banded-meridian-435911-g6-terraform"#change the project id(banded-meridian-435911-g6) to youurs
-    prefix = "/state/youtube"
-  }
+   backend "gcs" {
+     bucket = "banded-meridian-435911-g6-terraform" # change the project id (banded-meridian-435911-g6) to yours
+     prefix = "/state/youtube"
+   }
    ```
 
-   if it's there add the application credentials for terraform to use and initialize it
+   If it's there, add the application credentials for Terraform to use and initialize it
 
    ```bash
    export GOOGLE_APPLICATION_CREDENTIALS=terraform-sa-key.json
@@ -466,31 +468,40 @@ Now, you'll need to store your secrets in Google Cloud Secret Manager.
    ```
 
    ```bash
-      #move to the main folder
-      cd ../
-      # Create the Terraform backend bucket
-      
+   # Move to the main folder
+   cd ../
 
-      # Initialize Terraform workspace
-      make terraform-create-workspace ENV=staging
-      make terraform-init ENV=staging
+   # Create the Terraform backend bucket
 
-      # Deploy infrastructure
-      make terraform-action ENV=staging TF_ACTION=apply
+   # Initialize Terraform workspace
+   make terraform-create-workspace ENV=staging
+   make terraform-init ENV=staging
+
+   # Deploy infrastructure
+   make terraform-action ENV=staging TF_ACTION=apply
    ```
+
 4. Start CI-CD pipeline
+
    ```bash
    git add .
    git commit -m "your message"
    git push origin main
    ```
-5.Update your domains nameservers
-```bash
-#retrieve the name servers then update it in your domain settings
-gcloud dns managed-zones describe youtube-dns-zone-staging --format="get(nameServers)"
 
-```
-After the DNS has finished propagating you can visit the site this will take a while
+5. Update your domain's name servers
+
+   ```bash
+   # Retrieve the name servers, then update it in your domain settings
+   gcloud dns managed-zones describe youtube-dns-zone-staging --format="get(nameServers)"
+   ```
+
+   After the DNS has finished propagating, you can visit the site. This will take a while.
+   
+### Monitoring and Logging
+
+You can find instructions on monitoring and logging in [Monitoring and Logging](./docs/monitoringandlogging.md)
+
 # Technical Documentation
 
 For detailed technical documentation, please refer to:
@@ -500,4 +511,4 @@ For detailed technical documentation, please refer to:
 
 # License
 
-This project is licensed under the MIT License - see the  [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
