@@ -14,11 +14,8 @@ app.use(
     origin: [
       "http://localhost:3000",
       "http://localhost:80",
-      "http://localhost",
-      "http://34.48.175.1:80",
-      "http://34.48.175.1",
-      "http://markbosire.click",
-      "https://markbosire.click",
+      "http://markbosire.click",//replace with your domain
+      "https://markbosire.click", //replace with your domain
     ],
     credentials: true,
   })

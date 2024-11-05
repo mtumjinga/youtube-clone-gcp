@@ -23,7 +23,8 @@ This repository contains a YouTube clone built using the MERN stack (MongoDB, Ex
     - [3. Configure `./client/src/firebase.js`](#3-configure-clientsrcfirebasejs)
     - [4. Create a MongoDB Cluster](#4-create-a-mongodb-cluster)
       - [5. Get Your MongoDB URI](#5-get-your-mongodb-uri)
-    - [6. Storing Secrets in Google Cloud Secret Manager](#6-storing-secrets-in-google-cloud-secret-manager)
+    - [6. Enable domain cors origin](#6-enable-domain-cors-origin)
+    - [7. Storing Secrets in Google Cloud Secret Manager](#7-storing-secrets-in-google-cloud-secret-manager)
 - [Technical Documentation](#technical-documentation)
 - [License](#license)
 
@@ -380,47 +381,64 @@ Make sure to copy the `apiKey` from the Firebase settings later .
 
 4. Replace `<username>`, `<password>`, and `<dbname>` with your actual values.
 
-### 6. Storing Secrets in Google Cloud Secret Manager
+### 6. Enable domain cors origin
+Go to `./server/index.js`
+Edit the http and https domain to your domain
+```javascript
+    app.use(
+      cors({
+        origin: [
+          "http://localhost:3000",
+          "http://localhost:80",
+          "http://markbosire.click",//replace with your domain
+          "https://markbosire.click", //replace with your domain
+        ],
+        credentials: true,
+      })
+    );
+```
+
+### 7. Storing Secrets in Google Cloud Secret Manager
 
 Now, you'll need to store your secrets in Google Cloud Secret Manager.
 
 1. **Enable the Secret Manager API**:
 
    ```bash
-   gcloud services enable secretmanager.googleapis.com
+      gcloud services enable secretmanager.googleapis.com
    ```
 
 2. **Create each secret**:
 
    ```bash
-    # Export environment variables for secrets
-# Generate a JWT secret and export it
-export JWT_SECRET=$(openssl rand -base64 32)
-echo "Generated JWT_SECRET: $JWT_SECRET"
+      # Export environment variables for secrets
+      # Generate a JWT secret and export it
+      export JWT_SECRET=$(openssl rand -base64 32)
+      echo "Generated JWT_SECRET: $JWT_SECRET"
 
-# Export other environment variables for secrets
-export MONGO_URI="YOUR_MONGO_URI"
-export FIREBASE_API_KEY="YOUR_FIREBASE_API_KEY"
+     # Export other environment variables for secrets
+      export MONGO_URI="YOUR_MONGO_URI"
+      export FIREBASE_API_KEY="YOUR_FIREBASE_API_KEY"
 
-# Create MONGO secret
-gcloud secrets create MONGO --replication-policy="automatic"
-echo -n "$MONGO_URI" | gcloud secrets versions add MONGO --data-file=-
+      # Create MONGO secret
+        gcloud secrets create MONGO --replication-policy="automatic"
+        printf "%s" "$MONGO_URI" | gcloud secrets versions add MONGO --data-file=-
 
-# Create JWT secret
-gcloud secrets create JWT --replication-policy="automatic"
-echo -n "$JWT_SECRET" | gcloud secrets versions add JWT --data-file=-
+        # Create JWT secret
+        gcloud secrets create JWT --replication-policy="automatic"
+        echo -n "$JWT_SECRET" | gcloud secrets versions add JWT --data-file=-
 
-# Create REACT_APP_FIREBASE_API_KEY secret
-gcloud secrets create REACT_APP_FIREBASE_API_KEY --replication-policy="automatic"
-echo -n "$FIREBASE_API_KEY" | gcloud secrets versions add REACT_APP_FIREBASE_API_KEY --data-file=-
+        # Create REACT_APP_FIREBASE_API_KEY secret
+        gcloud secrets create REACT_APP_FIREBASE_API_KEY --replication-policy="automatic"
+        echo -n "$FIREBASE_API_KEY" | gcloud secrets versions add REACT_APP_FIREBASE_API_KEY --data-file=-
 
-   ```
+          ```
 
    Replace `YOUR_MONGO_URI` and `YOUR_FIREBASE_API_KEY` with your actual values and take note of your jwt secrets incase of any issue.
 
 3. Initialize the Project
    Change PROJECT_ID in `./Makefile`
-   ```Makefile
+   ```bash
    PROJECT_ID=banded-meridian-435911-g6#change this to your project id
    ```
    create backend
@@ -448,17 +466,17 @@ echo -n "$FIREBASE_API_KEY" | gcloud secrets versions add REACT_APP_FIREBASE_API
    ```
 
    ```bash
-   #move to the main folder
-   cd ../
-   # Create the Terraform backend bucket
-   
+      #move to the main folder
+      cd ../
+      # Create the Terraform backend bucket
+      
 
-   # Initialize Terraform workspace
-   make terraform-create-workspace ENV=staging
-   make terraform-init ENV=staging
+      # Initialize Terraform workspace
+      make terraform-create-workspace ENV=staging
+      make terraform-init ENV=staging
 
-   # Deploy infrastructure
-   make terraform-action ENV=staging TF_ACTION=apply
+      # Deploy infrastructure
+      make terraform-action ENV=staging TF_ACTION=apply
    ```
 4. Start CI-CD pipeline
    ```bash
@@ -466,6 +484,13 @@ echo -n "$FIREBASE_API_KEY" | gcloud secrets versions add REACT_APP_FIREBASE_API
    git commit -m "your message"
    git push origin main
    ```
+5.Update your domains nameservers
+```bash
+#retrieve the name servers then update it in your domain settings
+gcloud dns managed-zones describe youtube-dns-zone-staging --format="get(nameServers)"
+
+```
+After the DNS has finished propagating you can visit the site this will take a while
 # Technical Documentation
 
 For detailed technical documentation, please refer to:
