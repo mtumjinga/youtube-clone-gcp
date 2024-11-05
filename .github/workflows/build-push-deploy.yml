@@ -10,7 +10,7 @@ on:
 jobs:
   setup-build-publish-deploy:
     name: Setup, Build, Publish, and Deploy
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     permissions:
       contents: "read"
       id-token: "write"
